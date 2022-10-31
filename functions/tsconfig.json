@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
 		"module": "ESNext",
-		"moduleResolution": "NodeNext",
+		"moduleResolution": "Node",
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"esModuleInterop": true,
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"outDir": "lib",

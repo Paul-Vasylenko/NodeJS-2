@@ -1,0 +1,40 @@
+{
+  "name": "lab1",
+  "version": "1.0.0",
+  "description": "Hello!",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "npm run serve --prefix ./functions/",
+    "start": "npm run start --prefix ./functions/",
+    "deploy": "firebase deploy",
+    "build": "npm run --workspaces --if-present build",
+    "lint:check": "npm run --workspaces --if-present lint:check",
+    "lint:fix": "npm run --workspaces --if-present lint:fix",
+    "format:check": "npm run --workspaces --if-present format:check",
+    "format:fix": "npm run --workspaces --if-present format:fix",
+    "prepare": "husky install"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Paul-Vasylenko/NodeJS-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Paul-Vasylenko/NodeJS-1/issues"
+  },
+  "homepage": "https://github.com/Paul-Vasylenko/NodeJS-1#readme",
+  "devDependencies": {
+    "@types/node": "^18.8.5",
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.4",
+		"firebase-tools": "^11.15.0"
+  },
+  "workspaces": [
+    "functions",
+    "packages/*"
+  ]
+}

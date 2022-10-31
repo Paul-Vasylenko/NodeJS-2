@@ -1,0 +1,29 @@
+{
+	"name": "functions",
+	"scripts": {
+		"build": "tsc",
+		"build:watch": "tsc --watch",
+		"serve": "npm run build && firebase emulators:start --only functions",
+		"shell": "npm run build && firebase functions:shell",
+		"start": "npm run shell",
+		"deploy": "firebase deploy --only functions",
+		"logs": "firebase functions:log",
+		"lint:check": "eslint ./**/*.ts --ignore-path .gitignore",
+		"lint:fix": "eslint ./**/*.ts --fix --ignore-path .gitignore",
+		"format:check": "prettier . --check --ignore-path .gitignore",
+		"format:fix": "prettier . --write --ignore-path .gitignore"
+	},
+	"engines": {
+		"node": "16"
+	},
+	"type": "module",
+	"main": "lib/index.js",
+	"dependencies": {
+		"firebase-functions": "^3.21.0"
+	},
+	"private": true,
+	"devDependencies": {
+		"typescript": "^4.8.4",
+		"eslint-config-custom": "*"
+	}
+}

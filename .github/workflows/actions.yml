@@ -1,0 +1,58 @@
+name: Linting and deploy
+
+on:
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches: [ "master" ]
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: npm
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ./node_modules
+        key: modules-${{ hashFiles('package-lock.json') }}
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci
+    - name: Run eslint 🐱‍💻
+      run: npm run lint:check
+    - name: Run prettier 🐱‍💻
+      run: npm run format:check
+
+  deploy:
+    needs: linting
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: npm
+    # Runs a single command using the runners shell
+    # And of course we need to goto our functions folder to deploy
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ./node_modules
+        key: modules-${{ hashFiles('package-lock.json') }}
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci
+    - name:  Deploy to Firebase
+      run: npm run deploy
+      env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

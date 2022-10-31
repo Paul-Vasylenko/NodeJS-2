@@ -13,4 +13,14 @@ module.exports = {
 	ignorePatterns: [
 		'/lib/**/*', // Ignore built files.
 	],
+	rules: {
+		'import/extensions': [
+			'error',
+			'ignorePackages',
+			{
+				js: 'never',
+				ts: 'never',
+			},
+		],
+	},
 };

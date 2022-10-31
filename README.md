@@ -1,28 +1,30 @@
 # Lab 1
 
 ## Perfomers
+
 Vasylenko Pavlo IP-02
 Kostyanko Vadym IA-03
+
 ## Goals
-- setup environment
+
+- Make an acquaintance with native http api in NodeJS
+- find difference between commonjs/esm
+- find out what is that strange thing called `URL`
 
 ## Task
-Create project in GitHub with minimal code-quality checks and autodepoly
+
+Build small http server with router without using any framework. Use ESM modules for project.
+Server should include simple router, write it yourself. Please add 3-6 routes.
+
 ### Requirements
-- new repo in GitHub
-- initial empty commit
-- add ESlint (as strict as possible)
-- add Sonar-Lint to ESLint
-- add Prettier
-- Add check on pre-commit hooks
-- Add GitHub action to run checks\tests on commit or PR
-- Add AutoDeployment to any hosting provider
-- Add Editorconfig
-- Bonus: the same with TypeScript
-- Bonus: SonarCloud, https://github.com/SonarSource/sonarcloud-github-action
+
+- change default loader to ECMAScript module loader.
+- support different HTTP Methods (POST, GET, OPTIONS) for one route
+- support 2+ different content types (json, xml, formdata, urlencode)
+- follow specification for JSON: https://jsonapi.org/
+- handle graceful shutdown
+
 ## Questions
-- dev Deps vs Deps
-- Why we have separate tooling for formatting/linting
-- Difference with VPS/FaaS?
-- Why we need peerDeps?
-- `npm i` vs `npm ci`
+
+- why we have separate http and https?
+- Is it good idea to parse urls with REGEX?

@@ -14,8 +14,42 @@ export enum METHODS {
 
 type Handler = (req: Request, res: Response) => void | Promise<void>;
 
+function parse(str: string) {
+	let c,
+		tmp,
+		pattern = '';
+	const arr = str.split('/');
+	const keys = [];
+	if (arr[0] === '') arr.shift();
+
+	tmp = arr.shift();
+	while (tmp) {
+		c = tmp[0];
+		if (c === '*') {
+			keys.push('wild');
+			pattern += '/(.*)';
+		} else if (c === ':') {
+			keys.push(tmp.substring(1, tmp.length));
+			pattern += '/([^/]+?)';
+		} else {
+			pattern += '/' + tmp;
+		}
+		tmp = arr.shift();
+	}
+
+	return {
+		keys,
+		pattern: new RegExp('^' + pattern + '\\/?$', 'i'),
+	};
+}
+
+type HandlerMap = Map<RegExp, Map<METHODS, Handler[]>>;
+
 export default class {
-	private handlers: { [path: string]: { [method: string]: Handler[] } } = {};
+	// private handlers: { [path: string | RegExp]: { [method: string]: Handler[] } } = {};
+	private handlers: HandlerMap = new Map();
+
+	private keys: Map<RegExp, string[]> = new Map();
 
 	public add(method: METHODS, path: string, ...handlers: Handler[]) {
 		if (handlers.length === 0)
@@ -23,29 +57,59 @@ export default class {
 				'unimplemented',
 				`No handler for method ${method} and path ${path}`,
 			);
-		if (!this.handlers[path]?.[method]) {
+		const { keys, pattern: handledPath } = parse(path);
+
+		this.keys.set(handledPath, keys);
+
+		if (!this.handlers.get(handledPath)) this.handlers.set(handledPath, new Map());
+
+		if (!this.handlers.get(handledPath)?.get(method)) {
 			// first handler for this path or method
-			const oldHandlers = this.handlers[path] || {};
-			this.handlers[path] = {
-				...oldHandlers,
-				[method]: [...handlers],
-			};
+			const oldHandlers: Map<METHODS, Handler[]> = this.handlers.get(handledPath) || new Map();
+			oldHandlers.set(method, handlers);
 			return;
 		}
 		// not first handler
-		this.handlers[path][method].push(...handlers);
+		const methodMap = new Map();
+		methodMap.set(method, handlers);
+		this.handlers.set(handledPath, methodMap);
 	}
 
 	public async handle(req: Request, res: Response) {
 		const { url, method } = req;
-		if (!this.handlers[url]?.[method]) {
+
+		const handlerKeys = this.handlers.keys();
+		let rx = handlerKeys.next().value;
+		let handlers;
+		let keys: string[] = [];
+		let matches;
+		const params: Record<string, string> = {};
+		while (rx !== undefined) {
+			const match = url.match(rx);
+			if (match) {
+				matches = rx.exec(url);
+				handlers = this.handlers.get(rx)?.get(method as METHODS);
+				keys = this.keys.get(rx) || [];
+				break;
+			}
+
+			rx = handlerKeys.next().value;
+		}
+
+		if (!handlers) {
 			throw new https.HttpsError(
 				'unimplemented',
 				`No handler for method ${method} and path ${url}`,
 			);
 		}
 
-		for (const handler of this.handlers[url][method]) {
+		for (let i = 0; i < keys.length; ) {
+			params[keys[i]] = matches[++i];
+		}
+		// reassigne req.params to get in handler
+		req.params = params;
+
+		for (const handler of handlers) {
 			await handler(req, res);
 		}
 	}

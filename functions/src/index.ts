@@ -7,6 +7,7 @@ import MiniRouter, { METHODS } from './MiniRouter.js';
 
 const miniRouter = new MiniRouter();
 
+// add method test
 miniRouter.add(METHODS.GET, '/', (req, res) => {
 	res.json({
 		success: true,
@@ -14,22 +15,54 @@ miniRouter.add(METHODS.GET, '/', (req, res) => {
 	});
 });
 
-miniRouter.post('/api/test', (req, res) => {
-	res.json({
-		success: true,
-		method: req.method,
-		url: req.url,
-		message: 'POST /api/test works!',
-		body: req.body,
-	});
-});
-
+// simple route
 miniRouter.get('/api/test', (req, res) => {
 	res.json({
 		success: true,
 		method: req.method,
 		url: req.url,
 		message: 'GET /api/test works!',
+	});
+});
+
+// route with * regex
+miniRouter.get('/api/helloWorld/*', (req, res) => {
+	res.json({
+		success: true,
+		method: req.method,
+		url: req.url,
+		message: 'GET /api/helloWorld/* works!',
+	});
+});
+
+// route with * and something after
+miniRouter.get('/api/helloWorld/*/test', (req, res) => {
+	res.json({
+		success: true,
+		method: req.method,
+		url: req.url,
+		message: 'GET /api/helloWorld/*/test works!',
+	});
+});
+
+// route with params
+miniRouter.get('/api/users/:id', (req, res) => {
+	res.json({
+		success: true,
+		method: req.method,
+		params: req.params,
+		url: req.url,
+		message: 'GET /api/users/:id',
+	});
+});
+
+miniRouter.get('/api/users/:id/export/:format/test', (req, res) => {
+	res.json({
+		success: true,
+		method: req.method,
+		params: req.params,
+		url: req.url,
+		message: 'GET /api/users/:id/export/:format/test',
 	});
 });
 

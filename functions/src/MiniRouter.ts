@@ -1,4 +1,5 @@
-import { Request, Response, https } from 'firebase-functions';
+import { Request, Response } from 'firebase-functions';
+import defaultHandler from "./defaultHandler";
 
 export enum METHODS {
 	GET = 'GET',
@@ -53,10 +54,7 @@ export default class {
 
 	public add(method: METHODS, path: string, ...handlers: Handler[]) {
 		if (handlers.length === 0)
-			throw new https.HttpsError(
-				'unimplemented',
-				`No handler for method ${method} and path ${path}`,
-			);
+			handlers.push(defaultHandler);
 		const { keys, pattern: handledPath } = parse(path);
 
 		this.keys.set(handledPath, keys);
@@ -80,7 +78,7 @@ export default class {
 
 		const handlerKeys = this.handlers.keys();
 		let rx = handlerKeys.next().value;
-		let handlers;
+		let handlers: Handler[] = [];
 		let keys: string[] = [];
 		let matches;
 		const params: Record<string, string> = {};
@@ -88,7 +86,7 @@ export default class {
 			const match = url.match(rx);
 			if (match) {
 				matches = rx.exec(url);
-				handlers = this.handlers.get(rx)?.get(method as METHODS);
+				handlers = this.handlers.get(rx)?.get(method as METHODS) || [defaultHandler];
 				keys = this.keys.get(rx) || [];
 				break;
 			}
@@ -96,12 +94,6 @@ export default class {
 			rx = handlerKeys.next().value;
 		}
 
-		if (!handlers) {
-			throw new https.HttpsError(
-				'unimplemented',
-				`No handler for method ${method} and path ${url}`,
-			);
-		}
 
 		for (let i = 0; i < keys.length; ) {
 			params[keys[i]] = matches[++i];

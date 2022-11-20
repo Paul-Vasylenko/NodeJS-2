@@ -1,5 +1,5 @@
 import { Request, Response } from 'firebase-functions';
-import defaultHandler from "./defaultHandler";
+import defaultHandler from './defaultHandler';
 
 export enum METHODS {
 	GET = 'GET',
@@ -44,39 +44,40 @@ function parse(str: string) {
 	};
 }
 
-type HandlerMap = Map<RegExp, Map<METHODS, Handler>>;
+type HandlerMap = Map<string, Map<METHODS, Handler>>;
 
 export default class {
 	// private handlers: { [path: string | RegExp]: { [method: string]: Handler[] } } = {};
 	private handlers: HandlerMap = new Map();
 
-	private keys: Map<RegExp, string[]> = new Map();
+	private keys: Map<string, string[]> = new Map();
 
 	public add(method: METHODS, path: string, handler?: Handler) {
 		if (!handler) handler = defaultHandler;
-		const { keys, pattern: handledPath } = parse(path);
+		const { keys } = parse(path);
 
-		this.keys.set(handledPath, keys);
+		this.keys.set(path, keys);
 
-		if (!this.handlers.get(handledPath)) this.handlers.set(handledPath, new Map());
+		if (!this.handlers.get(path)) this.handlers.set(path, new Map());
 
-		if (!this.handlers.get(handledPath)?.get(method)) {
+		if (!this.handlers.get(path)?.get(method)) {
 			// first handler for this path or method
-			const oldHandlers: Map<METHODS, Handler> = this.handlers.get(handledPath) || new Map();
+			const oldHandlers: Map<METHODS, Handler> = this.handlers.get(path) || new Map();
 			oldHandlers.set(method, handler);
 			return;
 		}
 		// not first handler
 		const methodMap = new Map();
 		methodMap.set(method, handler);
-		this.handlers.set(handledPath, methodMap);
+		this.handlers.set(path, methodMap);
 	}
 
 	public async handle(req: Request, res: Response) {
 		const { url, method } = req;
 
 		const handlerKeys = this.handlers.keys();
-		let rx = handlerKeys.next().value;
+		let path = handlerKeys.next().value;
+		let rx = parse(path).pattern;
 		let handler: Handler = defaultHandler;
 		let keys: string[] = [];
 		let matches;
@@ -85,17 +86,19 @@ export default class {
 			const match = url.match(rx);
 			if (match) {
 				matches = rx.exec(url);
-				handler = this.handlers.get(rx)?.get(method as METHODS) || handler;
-				keys = this.keys.get(rx) || [];
+				handler = this.handlers.get(path)?.get(method as METHODS) || handler;
+				keys = this.keys.get(path) || [];
 				break;
 			}
 
-			rx = handlerKeys.next().value;
+			path = handlerKeys.next().value;
+			rx = parse(path).pattern;
 		}
 
-
-		for (let i = 0; i < keys.length; ) {
-			params[keys[i]] = matches[++i];
+		if (matches) {
+			for (let i = 0; i < keys.length; ) {
+				params[keys[i]] = matches[++i];
+			}
 		}
 		// reassigne req.params to get in handler
 		req.params = params;

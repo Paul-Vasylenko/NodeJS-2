@@ -1,5 +1,5 @@
 import { Request, Response, https } from 'firebase-functions';
-import MiniRouter  from './MiniRouter.js';
+import MiniRouter from './MiniRouter.js';
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -17,36 +17,36 @@ miniRouter.get('/helloWorld', (req, res) => {
 
 miniRouter.get('/helloWorld', (req, res) => {
 	res.json({
-		rewriten: true
+		rewriten: true,
 	});
 });
 
 // check different methods on single route
-miniRouter.get('/cats', (req, res)=>{
+miniRouter.get('/cats', (req, res) => {
 	res.json({
 		url: req.url,
-		method: 'GET!!!'
+		method: 'GET!!!',
 	});
 });
 
-miniRouter.post('/cats', (req, res)=>{
+miniRouter.post('/cats', (req, res) => {
 	res.json({
 		url: req.url,
-		method: 'POST!!!'
+		method: 'POST!!!',
 	});
 });
 
-miniRouter.put('/cats', (req, res)=>{
+miniRouter.put('/cats', (req, res) => {
 	res.json({
 		url: req.url,
-		method: 'PUT!!!'
+		method: 'PUT!!!',
 	});
 });
 
-miniRouter.options('/cats', (req, res)=>{
+miniRouter.options('/cats', (req, res) => {
 	res.json({
 		url: req.url,
-		method: 'OPTIONS!!!'
+		method: 'OPTIONS!!!',
 	});
 });
 
@@ -54,25 +54,24 @@ miniRouter.options('/cats', (req, res)=>{
 miniRouter.get('/heroes/*', (req, res) => {
 	res.json({
 		route: '/heroes/*',
-		success: true
+		success: true,
 	});
 });
 
 // check :id (params)
 miniRouter.get('/schools/:id', (req, res) => {
 	res.json({
-		route:'/schools/:id',
+		route: '/schools/:id',
 		params: req.params,
 	});
 });
 
 miniRouter.get('/schools/:id/hello/:param', (req, res) => {
 	res.json({
-		route:'/schools/:id/hello/:param',
+		route: '/schools/:id/hello/:param',
 		params: req.params,
 	});
 });
-
 
 export const router = https.onRequest((req: Request, res: Response) => {
 	try {

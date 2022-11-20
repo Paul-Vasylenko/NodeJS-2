@@ -1,5 +1,7 @@
 import { Request, Response } from 'firebase-functions';
-import defaultHandler from './defaultHandler';
+import { URLSearchParams } from 'url';
+import defaultHandler from "./defaultHandler";
+import {safeJSON} from "./helpers";
 
 export enum METHODS {
 	GET = 'GET',
@@ -14,6 +16,13 @@ export enum METHODS {
 }
 
 type Handler = (req: Request, res: Response) => void | Promise<void>;
+const processedContentTypes = {
+	'text/html': (text: string) => text,
+	'text/plain': (text: string) => text,
+	'application/json': (json: string) => safeJSON(json, {}),
+	'x-www-form-urlencoded': (data: string) => Object.fromEntries(new URLSearchParams(data)) as Record<string, string>
+};
+type TProcessedContentTypes = typeof processedContentTypes;
 
 function parse(str: string) {
 	let c,
@@ -73,7 +82,17 @@ export default class {
 	}
 
 	public async handle(req: Request, res: Response) {
-		const { url, method } = req;
+		const { url, method, headers } = req;
+
+		const contentTypeHeader = headers['content-type'];
+		if(contentTypeHeader){
+			const contentType = contentTypeHeader.split(';')[0];
+
+			const ALLOWED_CONTENT_TYPES = Object.keys(processedContentTypes);
+			if (ALLOWED_CONTENT_TYPES.includes(contentType)) {
+				req.body = processedContentTypes[contentType as keyof TProcessedContentTypes](req.body);
+			}
+		}
 
 		const handlerKeys = this.handlers.keys();
 		let path = handlerKeys.next().value;

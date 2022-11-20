@@ -16,7 +16,6 @@
 	"engines": {
 		"node": "16"
 	},
-	"type": "module",
 	"main": "lib/index.js",
 	"dependencies": {
 		"firebase-functions": "^3.21.0"

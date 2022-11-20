@@ -6,4 +6,4 @@ function safeJSON(data: string, fallback: Record<string, string>): Record<string
 	}
 }
 
-export {safeJSON};
+export { safeJSON };

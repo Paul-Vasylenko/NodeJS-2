@@ -1,7 +1,7 @@
 import { Request, Response } from 'firebase-functions';
 import { URLSearchParams } from 'url';
-import defaultHandler from "./defaultHandler";
-import {safeJSON} from "./helpers";
+import defaultHandler from './defaultHandler';
+import { safeJSON } from './helpers';
 
 export enum METHODS {
 	GET = 'GET',
@@ -20,7 +20,8 @@ const processedContentTypes = {
 	'text/html': (text: string) => text,
 	'text/plain': (text: string) => text,
 	'application/json': (json: string) => safeJSON(json, {}),
-	'x-www-form-urlencoded': (data: string) => Object.fromEntries(new URLSearchParams(data)) as Record<string, string>
+	'x-www-form-urlencoded': (data: string) =>
+		Object.fromEntries(new URLSearchParams(data)) as Record<string, string>,
 };
 type TProcessedContentTypes = typeof processedContentTypes;
 
@@ -85,7 +86,7 @@ export default class {
 		const { url, method, headers } = req;
 
 		const contentTypeHeader = headers['content-type'];
-		if(contentTypeHeader){
+		if (contentTypeHeader) {
 			const contentType = contentTypeHeader.split(';')[0];
 
 			const ALLOWED_CONTENT_TYPES = Object.keys(processedContentTypes);

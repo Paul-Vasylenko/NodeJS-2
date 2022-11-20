@@ -9,6 +9,7 @@ const miniRouter = new MiniRouter();
 
 miniRouter.get('/unimplemented');
 
+
 export const router = https.onRequest((req: Request, res: Response) => {
 	try {
 		miniRouter.handle(req, res);

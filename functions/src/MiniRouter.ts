@@ -44,7 +44,7 @@ function parse(str: string) {
 	};
 }
 
-type HandlerMap = Map<RegExp, Map<METHODS, Handler[]>>;
+type HandlerMap = Map<RegExp, Map<METHODS, Handler>>;
 
 export default class {
 	// private handlers: { [path: string | RegExp]: { [method: string]: Handler[] } } = {};
@@ -52,9 +52,8 @@ export default class {
 
 	private keys: Map<RegExp, string[]> = new Map();
 
-	public add(method: METHODS, path: string, ...handlers: Handler[]) {
-		if (handlers.length === 0)
-			handlers.push(defaultHandler);
+	public add(method: METHODS, path: string, handler?: Handler) {
+		if (!handler) handler = defaultHandler;
 		const { keys, pattern: handledPath } = parse(path);
 
 		this.keys.set(handledPath, keys);
@@ -63,13 +62,13 @@ export default class {
 
 		if (!this.handlers.get(handledPath)?.get(method)) {
 			// first handler for this path or method
-			const oldHandlers: Map<METHODS, Handler[]> = this.handlers.get(handledPath) || new Map();
-			oldHandlers.set(method, handlers);
+			const oldHandlers: Map<METHODS, Handler> = this.handlers.get(handledPath) || new Map();
+			oldHandlers.set(method, handler);
 			return;
 		}
 		// not first handler
 		const methodMap = new Map();
-		methodMap.set(method, handlers);
+		methodMap.set(method, handler);
 		this.handlers.set(handledPath, methodMap);
 	}
 
@@ -78,7 +77,7 @@ export default class {
 
 		const handlerKeys = this.handlers.keys();
 		let rx = handlerKeys.next().value;
-		let handlers: Handler[] = [];
+		let handler: Handler = defaultHandler;
 		let keys: string[] = [];
 		let matches;
 		const params: Record<string, string> = {};
@@ -86,7 +85,7 @@ export default class {
 			const match = url.match(rx);
 			if (match) {
 				matches = rx.exec(url);
-				handlers = this.handlers.get(rx)?.get(method as METHODS) || [defaultHandler];
+				handler = this.handlers.get(rx)?.get(method as METHODS) || handler;
 				keys = this.keys.get(rx) || [];
 				break;
 			}
@@ -101,44 +100,42 @@ export default class {
 		// reassigne req.params to get in handler
 		req.params = params;
 
-		for (const handler of handlers) {
-			await handler(req, res);
-		}
+		await handler(req, res);
 	}
 
-	public get(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.GET, path, ...handlers);
+	public get(path: string, handler?: Handler) {
+		this.add(METHODS.GET, path, handler);
 	}
 
-	public post(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.POST, path, ...handlers);
+	public post(path: string, handler?: Handler) {
+		this.add(METHODS.POST, path, handler);
 	}
 
-	public put(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.PUT, path, ...handlers);
+	public put(path: string, handler?: Handler) {
+		this.add(METHODS.PUT, path, handler);
 	}
 
-	public delete(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.DELETE, path, ...handlers);
+	public delete(path: string, handler?: Handler) {
+		this.add(METHODS.DELETE, path, handler);
 	}
 
-	public patch(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.PATCH, path, ...handlers);
+	public patch(path: string, handler?: Handler) {
+		this.add(METHODS.PATCH, path, handler);
 	}
 
-	public options(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.OPTIONS, path, ...handlers);
+	public options(path: string, handler?: Handler) {
+		this.add(METHODS.OPTIONS, path, handler);
 	}
 
-	public head(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.HEAD, path, ...handlers);
+	public head(path: string, handler?: Handler) {
+		this.add(METHODS.HEAD, path, handler);
 	}
 
-	public connect(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.CONNECT, path, ...handlers);
+	public connect(path: string, handler?: Handler) {
+		this.add(METHODS.CONNECT, path, handler);
 	}
 
-	public trace(path: string, ...handlers: Handler[]) {
-		this.add(METHODS.TRACE, path, ...handlers);
+	public trace(path: string, handler?: Handler) {
+		this.add(METHODS.TRACE, path, handler);
 	}
 }

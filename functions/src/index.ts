@@ -1,5 +1,5 @@
 import { Request, Response, https } from 'firebase-functions';
-import MiniRouter, { METHODS } from './MiniRouter.js';
+import MiniRouter  from './MiniRouter.js';
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -7,64 +7,7 @@ import MiniRouter, { METHODS } from './MiniRouter.js';
 
 const miniRouter = new MiniRouter();
 
-// add method test
-miniRouter.add(METHODS.GET, '/', (req, res) => {
-	res.json({
-		success: true,
-		body: req.body,
-	});
-});
-
-// simple route
-miniRouter.get('/api/test', (req, res) => {
-	res.json({
-		success: true,
-		method: req.method,
-		url: req.url,
-		message: 'GET /api/test works!',
-	});
-});
-
-// route with * regex
-miniRouter.get('/api/helloWorld/*', (req, res) => {
-	res.json({
-		success: true,
-		method: req.method,
-		url: req.url,
-		message: 'GET /api/helloWorld/* works!',
-	});
-});
-
-// route with * and something after
-miniRouter.get('/api/helloWorld/*/test', (req, res) => {
-	res.json({
-		success: true,
-		method: req.method,
-		url: req.url,
-		message: 'GET /api/helloWorld/*/test works!',
-	});
-});
-
-// route with params
-miniRouter.get('/api/users/:id', (req, res) => {
-	res.json({
-		success: true,
-		method: req.method,
-		params: req.params,
-		url: req.url,
-		message: 'GET /api/users/:id',
-	});
-});
-
-miniRouter.get('/api/users/:id/export/:format/test', (req, res) => {
-	res.json({
-		success: true,
-		method: req.method,
-		params: req.params,
-		url: req.url,
-		message: 'GET /api/users/:id/export/:format/test',
-	});
-});
+miniRouter.get('/unimplemented');
 
 export const router = https.onRequest((req: Request, res: Response) => {
 	try {

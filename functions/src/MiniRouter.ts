@@ -1,17 +1,19 @@
 import { Request, Response } from 'firebase-functions';
 import defaultHandler from './defaultHandler';
 
-export enum METHODS {
-	GET = 'GET',
-	POST = 'POST',
-	PUT = 'PUT',
-	DELETE = 'DELETE',
-	PATCH = 'PATCH',
-	OPTIONS = 'OPTIONS',
-	HEAD = 'HEAD',
-	CONNECT = 'CONNECT',
-	TRACE = 'TRACE',
-}
+export const METHODS = {
+	GET: 'GET',
+	POST: 'POST',
+	PUT: 'PUT',
+	DELETE: 'DELETE',
+	PATCH: 'PATCH',
+	OPTIONS: 'OPTIONS',
+	HEAD: 'HEAD',
+	CONNECT: 'CONNECT',
+	TRACE: 'TRACE',
+};
+
+export type TMethods = keyof typeof METHODS;
 
 type Handler = (req: Request, res: Response) => void | Promise<void>;
 
@@ -44,7 +46,7 @@ function parse(str: string) {
 	};
 }
 
-type HandlerMap = Map<string, Map<METHODS, Handler>>;
+type HandlerMap = Map<string, Map<TMethods, Handler>>;
 
 export default class {
 	// private handlers: { [path: string | RegExp]: { [method: string]: Handler[] } } = {};
@@ -52,7 +54,7 @@ export default class {
 
 	private keys: Map<string, string[]> = new Map();
 
-	public add(method: METHODS, path: string, handler?: Handler) {
+	public add(method: TMethods, path: string, handler?: Handler) {
 		if (!handler) handler = defaultHandler;
 		const { keys } = parse(path);
 
@@ -62,7 +64,7 @@ export default class {
 
 		if (!this.handlers.get(path)?.get(method)) {
 			// first handler for this path or method
-			const oldHandlers: Map<METHODS, Handler> = this.handlers.get(path) || new Map();
+			const oldHandlers: Map<TMethods, Handler> = this.handlers.get(path) || new Map();
 			oldHandlers.set(method, handler);
 			return;
 		}
@@ -86,7 +88,7 @@ export default class {
 			const match = url.match(rx);
 			if (match) {
 				matches = rx.exec(url);
-				handler = this.handlers.get(path)?.get(method as METHODS) || handler;
+				handler = this.handlers.get(path)?.get(method as TMethods) || handler;
 				keys = this.keys.get(path) || [];
 				break;
 			}
@@ -107,38 +109,38 @@ export default class {
 	}
 
 	public get(path: string, handler?: Handler) {
-		this.add(METHODS.GET, path, handler);
+		this.add(METHODS.GET as TMethods, path, handler);
 	}
 
 	public post(path: string, handler?: Handler) {
-		this.add(METHODS.POST, path, handler);
+		this.add(METHODS.POST as TMethods, path, handler);
 	}
 
 	public put(path: string, handler?: Handler) {
-		this.add(METHODS.PUT, path, handler);
+		this.add(METHODS.PUT as TMethods, path, handler);
 	}
 
 	public delete(path: string, handler?: Handler) {
-		this.add(METHODS.DELETE, path, handler);
+		this.add(METHODS.DELETE as TMethods, path, handler);
 	}
 
 	public patch(path: string, handler?: Handler) {
-		this.add(METHODS.PATCH, path, handler);
+		this.add(METHODS.PATCH as TMethods, path, handler);
 	}
 
 	public options(path: string, handler?: Handler) {
-		this.add(METHODS.OPTIONS, path, handler);
+		this.add(METHODS.OPTIONS as TMethods, path, handler);
 	}
 
 	public head(path: string, handler?: Handler) {
-		this.add(METHODS.HEAD, path, handler);
+		this.add(METHODS.HEAD as TMethods, path, handler);
 	}
 
 	public connect(path: string, handler?: Handler) {
-		this.add(METHODS.CONNECT, path, handler);
+		this.add(METHODS.CONNECT as TMethods, path, handler);
 	}
 
 	public trace(path: string, handler?: Handler) {
-		this.add(METHODS.TRACE, path, handler);
+		this.add(METHODS.TRACE as TMethods, path, handler);
 	}
 }

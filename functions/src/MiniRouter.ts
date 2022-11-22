@@ -1,5 +1,5 @@
 import { Request, Response } from 'firebase-functions';
-import defaultHandler from './defaultHandler';
+import defaultHandler from './defaultHandler.js';
 
 export const METHODS = {
 	GET: 'GET',

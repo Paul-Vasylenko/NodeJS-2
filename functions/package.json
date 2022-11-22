@@ -13,6 +13,7 @@
 		"format:check": "prettier . --check --ignore-path .gitignore",
 		"format:fix": "prettier . --write --ignore-path .gitignore"
 	},
+	"type": "module",
 	"engines": {
 		"node": "16"
 	},

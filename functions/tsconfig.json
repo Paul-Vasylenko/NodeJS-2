@@ -1,10 +1,9 @@
 {
 	"compilerOptions": {
-		"module": "CommonJS",
-		"moduleResolution": "Node",
+		"module": "ES2020",
+		"moduleResolution": "node",
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
-		"esModuleInterop": true,
 		"noImplicitAny": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
@@ -12,9 +11,8 @@
 		"sourceMap": true,
 		"strict": true,
 		"lib": ["ESNext"],
-		"target": "ES2020",
-		"allowSyntheticDefaultImports": true,
-		"baseUrl": "."
+		"target": "ES2021",
+		"allowSyntheticDefaultImports": true
 	},
 	"compileOnSave": true,
 	"include": ["src", ".eslintrc.cjs"],

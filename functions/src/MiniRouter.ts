@@ -1,3 +1,4 @@
+import URL from 'url';
 import { Request, Response } from 'firebase-functions';
 import defaultHandler from './defaultHandler.js';
 
@@ -75,7 +76,9 @@ export default class {
 	}
 
 	public async handle(req: Request, res: Response) {
-		const { url, method } = req;
+		const { url: requestURL, method } = req;
+
+		const url = URL.parse(requestURL).pathname || '/';
 
 		const handlerKeys = this.handlers.keys();
 		let path = handlerKeys.next().value;

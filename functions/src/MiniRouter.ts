@@ -2,7 +2,7 @@ import { URLSearchParams } from 'url';
 import URL from 'url';
 import { Request, Response } from 'firebase-functions';
 import defaultHandler from './defaultHandler.js';
-import { safeJSON } from './helpers';
+import { safeJSON } from './helpers.js';
 
 export const METHODS = {
 	GET: 'GET',

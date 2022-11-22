@@ -77,18 +77,6 @@ export const router = https.onRequest((req: Request, res: Response) => {
 	try {
 		miniRouter.handle(req, res);
 	} catch (e: unknown) {
-		if (e instanceof https.HttpsError && e.code === 'unimplemented') {
-			res.status(404).json({
-				errors: [
-					{
-						code: e.code,
-						status: 404,
-						detail: e.message,
-					},
-				],
-			});
-		}
-
 		res.status(500).json({
 			errors: [
 				{

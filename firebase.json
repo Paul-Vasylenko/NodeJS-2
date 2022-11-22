@@ -22,10 +22,13 @@
       "**/.*",
       "**/node_modules/**"
     ],
+		"cleanUrls": true,
+
+    "trailingSlash": false,
     "rewrites" : [
       {
-        "source": "/hello",
-        "function": "hello"
+        "source": "/**",
+        "function": "router"
       }
     ]
   }
